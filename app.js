@@ -1,5 +1,8 @@
 const db = require("./db");
 const knex = require("knex")(db);
+const fs = require("fs");
+const swaggerUI = require("swagger-ui-express");
+const swaggerDocument = require("./docs/openapi.json");
 
 var createError = require('http-errors');
 var express = require('express');
@@ -11,6 +14,12 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
 var app = express();
+const logStream = fs.createWriteStream(path.join(__dirname, "access.txt"), {
+  flags: "a",
+});
+
+app.use(logger("common", { stream: logStream }));
+app.use("/docs", swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
